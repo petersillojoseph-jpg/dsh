@@ -1,0 +1,1303 @@
+/* ==========================================================================
+   Grokbot UI — Rakazo product visual language
+   --------------------------------------------------------------------------
+   Adapted from Rakazo (Apache-2.0), https://github.com/elie222/rakazo:
+   packages/ui-tokens/src/tokens.css and packages/ui-web/src/styles.css.
+   The palette and type scale are exact upstream values; the DSH `--dsw-*`
+   override layer carries them into shipped components (theme/tokens.js), and
+   this sheet applies the product language to the app chrome and the plugin's
+   own surfaces.
+
+   Rules of this sheet:
+   - flat surfaces, hairlines, solid fills, one type scale, one accent blue;
+   - the only strong colour comes from bot avatars and the working/status dots;
+   - stable DSH data attributes and our own `gb-*` classes only — never hashed
+     CSS-module names as style selectors.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Rakazo palette + scale tokens (exact values from tokens.css)
+   -------------------------------------------------------------------------- */
+
+body {
+  --rk-bg: #ffffff;
+  --rk-dialog: #ffffff;
+  --rk-fg: #1c1c1c;
+  --rk-card: #f2f2f2;
+  --rk-card-fg: #1c1c1c;
+  --rk-popover: #ffffff;
+  --rk-popover-fg: #1c1c1c;
+  --rk-glass-fill: #ffffff;
+  --rk-glass-stroke: #14141416;
+  --rk-primary: #1c1c1c;
+  --rk-primary-fg: #fcfcfc;
+  --rk-primary-hover: #363636;
+  --rk-primary-disabled: #1c1c1c26;
+  --rk-secondary: #1c1c1c0f;
+  --rk-secondary-fg: #1c1c1c;
+  --rk-chat-user: #1c1c1c;
+  --rk-chat-user-fg: #ffffff;
+  --rk-muted: #f2f2f2;
+  --rk-muted-fg: #1c1c1cad;
+  --rk-faint-fg: #1c1c1c8f;
+  --rk-accent: #1c1c1c0f;
+  --rk-accent-fg: #1c1c1c;
+  --rk-destructive: #cd2834;
+  --rk-destructive-fill: #e72e3b;
+  --rk-destructive-fg: #ffffff;
+  --rk-border: #1c1c1c1f;
+  --rk-input: #1c1c1c3d;
+  --rk-ring: #1e86fc;
+  --rk-sidebar: #f5f5f5;
+  --rk-sidebar-fg: #1c1c1c;
+  --rk-sidebar-border: #1c1c1c1f;
+  --rk-sidebar-accent: #1c1c1c14;
+  --rk-sidebar-accent-fg: #1c1c1c;
+  --rk-link: #0b6dd3;
+  --rk-success: #00854a;
+  --rk-warning: #aa6300;
+  --rk-status-working: #0b6dd3;
+  --rk-unread: #0b6dd3;
+  --rk-working-dot: #10ab61;
+  --rk-overlay: #00000080;
+  --rk-scrollbar: #1c1c1c3d;
+  --rk-scrollbar-hover: #1c1c1c85;
+
+  /* Rakazo app-level token names (consumed by the ported avatar engine and any
+     adapted Rakazo CSS). Exact tokens.css names, same light values. */
+  --background: #ffffff;
+  --dialog: #ffffff;
+  --foreground: #1c1c1c;
+  --card: #f2f2f2;
+  --card-foreground: #1c1c1c;
+  --popover: #ffffff;
+  --popover-foreground: #1c1c1c;
+  --glass-fill: #ffffff;
+  --glass-stroke: #14141416;
+  --primary: #1c1c1c;
+  --primary-foreground: #fcfcfc;
+  --primary-hover: #363636;
+  --primary-disabled: #1c1c1c26;
+  --secondary: #1c1c1c0f;
+  --secondary-foreground: #1c1c1c;
+  --chat-user: #1c1c1c;
+  --chat-user-foreground: #ffffff;
+  --muted: #f2f2f2;
+  --muted-foreground: #1c1c1cad;
+  --faint-foreground: #1c1c1c8f;
+  --accent: #1c1c1c0f;
+  --accent-foreground: #1c1c1c;
+  --destructive: #cd2834;
+  --destructive-fill: #e72e3b;
+  --destructive-foreground: #ffffff;
+  --border: #1c1c1c1f;
+  --input: #1c1c1c3d;
+  --ring: #1e86fc;
+  --sidebar: #f5f5f5;
+  --sidebar-foreground: #1c1c1c;
+  --sidebar-border: #1c1c1c1f;
+  --sidebar-accent: #1c1c1c14;
+  --sidebar-accent-foreground: #1c1c1c;
+  --link: #0b6dd3;
+  --favicon-plate: #ffffff;
+  --success: #00854a;
+  --warning: #aa6300;
+  --status-working: #0b6dd3;
+  --unread: #0b6dd3;
+  --working-dot: #10ab61;
+  --overlay: #00000080;
+  --scrollbar: #1c1c1c3d;
+  --scrollbar-hover: #1c1c1c85;
+
+  /* Typography aliases in Rakazo's names, for adapted reference CSS. */
+  --font-sans: var(--rk-font-sans);
+  --font-mono: var(--rk-font-mono);
+  --radius: 12px;
+
+  /* Type scale (packages/ui-web/src/styles.css, exact). */
+  --rk-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --rk-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --rk-text-caption: 11px;
+  --rk-text-caption-lh: 16px;
+  --rk-text-caption-ls: 0.005em;
+  --rk-text-label: 12px;
+  --rk-text-label-lh: 16px;
+  --rk-text-body-sm: 13px;
+  --rk-text-body-sm-lh: 18px;
+  --rk-text-body: 14px;
+  --rk-text-body-lh: 20px;
+  --rk-text-body-lg: 15px;
+  --rk-text-body-lg-lh: 22px;
+  --rk-text-heading3: 17px;
+  --rk-text-heading3-lh: 24px;
+  --rk-text-heading3-ls: -0.008em;
+  --rk-text-heading2: 22px;
+  --rk-text-heading2-lh: 28px;
+  --rk-text-heading2-ls: -0.012em;
+  --rk-text-heading1: 26px;
+  --rk-text-heading1-lh: 32px;
+  --rk-text-heading1-ls: -0.015em;
+  --rk-text-display: 32px;
+  --rk-text-display-lh: 40px;
+  --rk-text-display-ls: -0.02em;
+  --rk-weight-regular: 400;
+  --rk-weight-medium: 500;
+  --rk-weight-semibold: 600;
+
+  /* Radius: 12px base, sm/md/lg/xl/2xl derived (ui-web/styles.css). */
+  --rk-radius-sm: 8px;
+  --rk-radius-md: 10px;
+  --rk-radius-lg: 12px;
+  --rk-radius-xl: 16px;
+  --rk-radius-2xl: 20px;
+  --rk-radius: 12px;
+  --rk-radius-pill: 999px;
+
+  --rk-shadow-sm: 0 1px 2px 0 #0000000a;
+  --rk-shadow-md: 0 4px 12px 0 #00000008, 0 1px 3px 0 #0000000a;
+  --rk-shadow-lg: 0 12px 32px 0 #00000014, 0 2px 8px 0 #0000000a;
+
+  /* DSH shared variables the shipped components read directly. */
+  --dsw-radius-xs: 4px;
+  --dsw-radius-sm: var(--rk-radius-sm);
+  --dsw-radius-md: var(--rk-radius-md);
+  --dsw-radius-lg: var(--rk-radius-lg);
+  --dsw-radius-xl: var(--rk-radius-xl);
+  --dsw-radius-panel: var(--rk-radius-2xl);
+  --dsw-focus-ring-color: var(--rk-ring);
+  --dsw-focus-ring-width: 2px;
+  --dsh-scrollbar-thumb: var(--rk-scrollbar);
+  --dsh-scrollbar-thumb-hover: var(--rk-scrollbar-hover);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body[data-ds-dark-theme] {
+  --rk-bg: #0a0a0a;
+  --rk-dialog: #161616;
+  --rk-fg: #f5f5f5;
+  --rk-card: #232323;
+  --rk-card-fg: #f5f5f5;
+  --rk-popover: #232323;
+  --rk-popover-fg: #f5f5f5;
+  --rk-glass-fill: #2c2c2e;
+  --rk-glass-stroke: #fcfcfc26;
+  --rk-primary: #f5f5f5;
+  --rk-primary-fg: #121212;
+  --rk-primary-hover: #dbdbdb;
+  --rk-primary-disabled: #f5f5f521;
+  --rk-secondary: #f5f5f50a;
+  --rk-secondary-fg: #f5f5f5;
+  --rk-chat-user: #3e3e3e;
+  --rk-chat-user-fg: #f5f5f5;
+  --rk-muted: #232323;
+  --rk-muted-fg: #f5f5f5a8;
+  --rk-faint-fg: #f5f5f58a;
+  --rk-accent: #f5f5f51a;
+  --rk-accent-fg: #f5f5f5;
+  --rk-destructive: #ff6463;
+  --rk-destructive-fill: #cf2b35;
+  --rk-destructive-fg: #ffffff;
+  --rk-border: #f5f5f51a;
+  --rk-input: #f5f5f538;
+  --rk-ring: #1884fc;
+  --rk-sidebar: #0a0a0a;
+  --rk-sidebar-fg: #f5f5f5;
+  --rk-sidebar-border: #f5f5f50f;
+  --rk-sidebar-accent: #f5f5f514;
+  --rk-sidebar-accent-fg: #f5f5f5;
+  --rk-link: #4d9bff;
+  --rk-success: #00ba69;
+  --rk-warning: #e28600;
+  --rk-status-working: #4d9bff;
+  --rk-unread: #4d9bff;
+  --rk-working-dot: #0e9f5a;
+  --rk-overlay: #000000b2;
+  --rk-scrollbar: #f5f5f538;
+  --rk-scrollbar-hover: #f5f5f580;
+
+  --background: #0a0a0a;
+  --dialog: #161616;
+  --foreground: #f5f5f5;
+  --card: #232323;
+  --card-foreground: #f5f5f5;
+  --popover: #232323;
+  --popover-foreground: #f5f5f5;
+  --glass-fill: #2c2c2e;
+  --glass-stroke: #fcfcfc26;
+  --primary: #f5f5f5;
+  --primary-foreground: #121212;
+  --primary-hover: #dbdbdb;
+  --primary-disabled: #f5f5f521;
+  --secondary: #f5f5f50a;
+  --secondary-foreground: #f5f5f5;
+  --chat-user: #3e3e3e;
+  --chat-user-foreground: #f5f5f5;
+  --muted: #232323;
+  --muted-foreground: #f5f5f5a8;
+  --faint-foreground: #f5f5f58a;
+  --accent: #f5f5f51a;
+  --accent-foreground: #f5f5f5;
+  --destructive: #ff6463;
+  --destructive-fill: #cf2b35;
+  --destructive-foreground: #ffffff;
+  --border: #f5f5f51a;
+  --input: #f5f5f538;
+  --ring: #1884fc;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-border: #f5f5f50f;
+  --sidebar-accent: #f5f5f514;
+  --sidebar-accent-foreground: #f5f5f5;
+  --link: #4d9bff;
+  --favicon-plate: #ffffff;
+  --success: #00ba69;
+  --warning: #e28600;
+  --status-working: #4d9bff;
+  --unread: #4d9bff;
+  --working-dot: #0e9f5a;
+  --overlay: #000000b2;
+  --scrollbar: #f5f5f538;
+  --scrollbar-hover: #f5f5f580;
+
+  --rk-shadow-sm: 0 1px 2px 0 #00000066;
+  --rk-shadow-md: 0 4px 12px 0 #00000055, 0 1px 3px 0 #00000066;
+  --rk-shadow-lg: 0 12px 32px 0 #00000080, 0 2px 8px 0 #00000066;
+}
+
+/* --------------------------------------------------------------------------
+   1. Base canvas + typography
+   -------------------------------------------------------------------------- */
+
+html,
+body {
+  background-color: var(--rk-bg);
+}
+
+body {
+  color: var(--rk-fg);
+  font-family: var(--rk-font-sans);
+  font-size: var(--rk-text-body);
+  line-height: var(--rk-text-body-lh);
+  font-weight: var(--rk-weight-regular);
+}
+
+body ::selection {
+  background: color-mix(in srgb, var(--rk-ring) 22%, transparent);
+  color: var(--rk-fg);
+}
+
+body :focus-visible {
+  outline: 2px solid var(--rk-ring);
+  outline-offset: 2px;
+}
+
+/* Flat, thin Rakazo scrollbars: 6px, transparent track, rounded thumb. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rk-scrollbar) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--rk-scrollbar);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--rk-scrollbar-hover);
+}
+
+/* Small caption text keeps Rakazo's positive tracking. */
+[data-slot="sidebar"] [class*="sectionLabel"],
+[data-slot="sidebar"] [class*="SectionLabel"] {
+  font-size: var(--rk-text-caption);
+  line-height: var(--rk-text-caption-lh);
+  letter-spacing: var(--rk-text-caption-ls);
+}
+
+/* --------------------------------------------------------------------------
+   2. Shell surfaces
+   -------------------------------------------------------------------------- */
+
+[data-slot="sidebar"] > div {
+  background: var(--rk-sidebar) !important;
+  border-right: 1px solid var(--rk-sidebar-border);
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+[data-conversation-region="chat"] {
+  background: var(--rk-bg) !important;
+  background-image: none !important;
+}
+
+[data-rightbar-collapsed="false"] [data-dockkit-surface],
+[data-rightbar-collapsed="false"] [data-sidebar-right-panel] > div {
+  background: var(--rk-dialog) !important;
+  border-left: 1px solid var(--rk-border);
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+[data-sidebar-right-panel] {
+  box-shadow: none;
+}
+
+[data-side="sidebar"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+[data-side="sidebar"]:hover {
+  background: var(--rk-accent);
+}
+
+[data-shell-bottom] {
+  background: var(--rk-bg);
+  border-top: 1px solid var(--rk-border);
+}
+
+/* --------------------------------------------------------------------------
+   3. Sidebar — Rakazo roster density
+   -------------------------------------------------------------------------- */
+
+[data-slot="sidebar"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+}
+
+[data-slot="sidebar"] button {
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
+}
+
+/* Brand row: the animated mascot + wordmark. */
+[data-slot="sidebar"] [class*="_brand"] {
+  border-radius: var(--rk-radius-md);
+}
+
+[data-slot="sidebar"] [class*="_brand"]:hover {
+  background: var(--rk-accent);
+}
+
+[data-slot="sidebar"] [class*="_brandName"],
+[data-slot="sidebar"] [class*="_brandName"] * {
+  font-family: var(--rk-font-sans);
+  font-size: var(--rk-text-body);
+  line-height: var(--rk-text-body-lh);
+  font-weight: var(--rk-weight-semibold);
+  letter-spacing: -0.011em;
+  color: var(--rk-fg);
+}
+
+[data-slot="sidebar"] [class*="_brand"]:hover [class*="_brandMark"],
+[data-slot="sidebar"] [class*="_brand"]:hover [class*="_brandName"] {
+  filter: none;
+}
+
+/* New session: a quiet Rakazo outline pill. */
+[data-slot="sidebar"] [class*="_newSession"] {
+  border: 1px solid var(--rk-border) !important;
+  border-radius: var(--rk-radius-md) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--rk-fg) !important;
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+}
+
+[data-slot="sidebar"] [class*="_newSession"]:hover {
+  background: var(--rk-accent) !important;
+  border-color: var(--rk-border) !important;
+}
+
+[data-slot="sidebar"] [class*="_newSession"] svg {
+  color: var(--rk-muted-fg);
+}
+
+[data-slot="sidebar"] nav[aria-label="Global panels"] button {
+  border-radius: var(--rk-radius-sm);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  color: var(--rk-sidebar-fg);
+}
+
+[data-slot="sidebar"] nav[aria-label="Global panels"] button:hover {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+}
+
+[data-slot="sidebar"] nav[aria-label="Global panels"] button:hover svg {
+  color: var(--rk-fg);
+}
+
+[data-slot="sidebar"] [data-sidebar-toggle]:hover,
+[data-slot="sidebar"] [class*="_iconButton"]:hover {
+  background: var(--rk-accent) !important;
+  box-shadow: none;
+  color: var(--rk-fg);
+}
+
+[data-slot="sidebar"] input:not([type="checkbox"]):not([type="radio"]) {
+  border-radius: var(--rk-radius-sm);
+  box-shadow: none;
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+}
+
+[data-slot="sidebar"] input:not([type="checkbox"]):not([type="radio"]):focus {
+  background: var(--rk-bg) !important;
+  box-shadow: 0 0 0 2px var(--rk-ring);
+}
+
+/* Section labels: 11/16 with the caption tracking, muted. */
+[data-slot="sidebar"] [class*="sectionLabel"],
+[data-slot="sidebar"] [class*="SectionLabel"] {
+  color: var(--rk-muted-fg) !important;
+  font-weight: var(--rk-weight-medium);
+}
+
+/* Session rows: 13/18, selected rows use sidebar-accent. */
+[aria-label="Sessions"] [role="treeitem"] {
+  border-radius: var(--rk-radius-sm);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[aria-label="Sessions"] [role="treeitem"]:hover {
+  background: var(--rk-accent);
+}
+
+[aria-label="Sessions"] [role="treeitem"][data-selected],
+[aria-label="Sessions"] [role="treeitem"][aria-selected="true"],
+[aria-label="Sessions"] [role="treeitem"][data-active] {
+  background: var(--rk-sidebar-accent) !important;
+  box-shadow: none;
+  color: var(--rk-sidebar-accent-fg);
+}
+
+[aria-label="Sessions"] [class*="sessionRow"] [class*="title"],
+[aria-label="Sessions"] [class*="SessionRow"] [class*="title"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+}
+
+[aria-label="Sessions"] [class*="_fade"],
+[aria-label="Sessions"] [class*="fade"] {
+  background: linear-gradient(180deg, transparent, var(--rk-sidebar)) !important;
+}
+
+[aria-label="Sessions"] [class*="time"],
+[aria-label="Sessions"] [class*="timestamp"] {
+  font-size: var(--rk-text-label);
+  line-height: var(--rk-text-label-lh);
+  color: var(--rk-faint-fg);
+  font-variant-numeric: tabular-nums;
+}
+
+[aria-label="Account menu"] {
+  border-radius: var(--rk-radius-sm);
+}
+
+[aria-label="Account menu"]:hover {
+  background: var(--rk-accent) !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. Conversation header — floating, quiet, with the bot identity pill
+   -------------------------------------------------------------------------- */
+
+header[data-window-drag] {
+  background: color-mix(in srgb, var(--rk-bg) 88%, transparent);
+  border-bottom: 1px solid transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+header[data-window-drag] [class*="_crumbCurrent"] {
+  font-size: var(--rk-text-body);
+  line-height: var(--rk-text-body-lh);
+  font-weight: var(--rk-weight-medium);
+  letter-spacing: -0.011em;
+  color: var(--rk-fg);
+}
+
+header[data-window-drag] [class*="_crumb"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  color: var(--rk-muted-fg);
+}
+
+header[data-window-drag] [class*="_tab"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  color: var(--rk-muted-fg);
+  border-radius: var(--rk-radius-sm);
+  transition: color 140ms ease, background-color 140ms ease;
+}
+
+header[data-window-drag] [class*="_tab"]:hover {
+  color: var(--rk-fg);
+  background: var(--rk-accent);
+}
+
+header[data-window-drag] [class*="_tabActive"],
+header[data-window-drag] [class*="_tab"][data-active],
+header[data-window-drag] [class*="_tab"][aria-selected="true"] {
+  color: var(--rk-fg);
+  font-weight: var(--rk-weight-semibold);
+}
+
+header[data-window-drag] [class*="_tabActive"]::after,
+header[data-window-drag] [class*="_tab"][data-active]::after,
+header[data-window-drag] [class*="_tab"][aria-selected="true"]::after {
+  background: var(--rk-fg) !important;
+}
+
+[data-conversation-header-corner] button,
+[data-conversation-header-leading] button {
+  border-radius: var(--rk-radius-sm);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[data-conversation-header-corner] button:hover,
+[data-conversation-header-leading] button:hover {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+  box-shadow: none;
+}
+
+/* Floating pill header actions: plain utility chips in the header row. */
+header[data-window-drag] [data-slot="conversation.session.header.actions"] {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+header[data-window-drag] [data-slot="conversation.session.header.actions"] button,
+header[data-window-drag] [class*="_trigger"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  color: var(--rk-muted-fg);
+  border-radius: var(--rk-radius-pill);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+header[data-window-drag] [data-slot="conversation.session.header.actions"] button:hover,
+header[data-window-drag] [class*="_trigger"]:hover {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+}
+
+/* --------------------------------------------------------------------------
+   5. Hero / empty state — Rakazo editorial calm
+   -------------------------------------------------------------------------- */
+
+[data-conversation-region="chat"][data-content-phase="hero"] [class*="_headline"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"] [class*="_titleGroup"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"] [class*="_titleGroup"] > span:first-child {
+  font-family: var(--rk-font-sans);
+  font-size: var(--rk-text-display);
+  line-height: var(--rk-text-display-lh);
+  letter-spacing: var(--rk-text-display-ls);
+  font-weight: var(--rk-weight-semibold);
+  color: var(--rk-fg);
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+  -webkit-text-fill-color: currentColor;
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"] [class*="_previewBadge"] {
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-pill);
+  background: transparent !important;
+  color: var(--rk-muted-fg);
+  font-size: var(--rk-text-caption);
+  line-height: var(--rk-text-caption-lh);
+  letter-spacing: var(--rk-text-caption-ls);
+  font-weight: var(--rk-weight-medium);
+  padding: 2px 8px;
+  box-shadow: none;
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"]
+  [class*="_heroWorkspaceRow"]
+  button {
+  border: 1px solid transparent !important;
+  border-radius: var(--rk-radius-pill) !important;
+  background: var(--rk-card) !important;
+  color: var(--rk-muted-fg);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  padding-inline: 12px;
+  box-shadow: none;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"]
+  [class*="_heroWorkspaceRow"]
+  button:hover {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+}
+
+[data-conversation-region="chat"][data-content-phase="hero"] [class*="_heroWorkspaceRow"] svg {
+  color: var(--rk-muted-fg);
+}
+
+[data-slot="conversation.hero.brand.mark"] svg {
+  filter: none;
+  animation: none;
+}
+
+/* --------------------------------------------------------------------------
+   6. Composer — flat pill surface
+   -------------------------------------------------------------------------- */
+
+[data-composer-card] {
+  position: relative;
+  background: var(--rk-card) !important;
+  border: 1px solid transparent;
+  border-radius: var(--rk-radius-2xl) !important;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+[data-composer-card]:hover {
+  background: color-mix(in srgb, var(--rk-card) 82%, var(--rk-fg) 5%) !important;
+  border-color: var(--rk-border);
+}
+
+[data-composer-card]:focus-within {
+  background: var(--rk-dialog) !important;
+  border-color: var(--rk-border);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--rk-ring) 20%, transparent);
+}
+
+[data-composer-input] {
+  font-family: var(--rk-font-sans);
+  font-size: var(--rk-text-body-lg);
+  line-height: var(--rk-text-body-lg-lh);
+  color: var(--rk-fg);
+  caret-color: var(--rk-ring);
+}
+
+[data-composer-placeholder] {
+  color: var(--rk-faint-fg);
+  opacity: 1;
+}
+
+[data-composer-card] button {
+  border-radius: var(--rk-radius-pill);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
+}
+
+[data-composer-card] button[class*="_primary"],
+[data-composer-card] button[aria-label="Send message"] {
+  border-radius: var(--rk-radius-pill) !important;
+  border: none !important;
+  background: var(--rk-primary) !important;
+  color: var(--rk-primary-fg) !important;
+  box-shadow: none !important;
+}
+
+[data-composer-card] button[class*="_primary"]:hover:not(:disabled),
+[data-composer-card] button[aria-label="Send message"]:hover:not(:disabled) {
+  background: var(--rk-primary) !important;
+  opacity: 0.84;
+}
+
+[data-composer-card] button[aria-label="Send message"]:disabled {
+  background: var(--rk-muted) !important;
+  color: var(--rk-faint-fg) !important;
+  opacity: 1;
+}
+
+[data-composer-card] button:not([aria-label="Send message"]):hover:not(:disabled) {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+}
+
+[data-composer-overlay],
+[data-input-scroll] {
+  border-radius: inherit;
+}
+
+/* Composer utility pills (workspace, access mode, model). */
+[data-composer-card] [class*="_trigger"],
+[data-composer-card] [class*="_seat"] {
+  border-radius: var(--rk-radius-pill);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  color: var(--rk-muted-fg);
+}
+
+[data-composer-card] [class*="_trigger"]:hover,
+[data-composer-card] [class*="_seat"]:hover {
+  background: var(--rk-accent);
+  color: var(--rk-fg);
+}
+
+/* --------------------------------------------------------------------------
+   7. Transcript: messages, markdown, tools, reasoning
+   -------------------------------------------------------------------------- */
+
+[data-conversation-region="chat"] [data-chat-flow] {
+  color: var(--rk-fg);
+  font-size: var(--rk-text-body-lg);
+  line-height: var(--rk-text-body-lg-lh);
+}
+
+/* User bubbles are a solid fill: near-black on white, light grey on black. */
+[data-message-bubble] {
+  background: var(--rk-chat-user) !important;
+  color: var(--rk-chat-user-fg) !important;
+  border: none !important;
+  border-radius: var(--rk-radius-xl) !important;
+  padding: 12px 18px !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  font-size: var(--rk-text-body-lg);
+  line-height: var(--rk-text-body-lg-lh);
+  max-width: min(100%, 42rem);
+}
+
+[data-message-bubble] * {
+  color: inherit !important;
+}
+
+/* Assistant replies are plain text on the page, not a bubble. */
+[data-chat-flow-kind="assistant"] [class*="_markdown"],
+[data-chat-flow-kind^="assistant"] [class*="_markdown"] {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+[data-conversation-region="chat"] p,
+[data-conversation-region="chat"] li {
+  font-size: var(--rk-text-body-lg);
+  line-height: var(--rk-text-body-lg-lh);
+}
+
+[data-conversation-region="chat"] h1,
+[data-conversation-region="chat"] h2,
+[data-conversation-region="chat"] h3,
+[data-conversation-region="chat"] h4 {
+  font-family: var(--rk-font-sans);
+  font-weight: var(--rk-weight-semibold);
+  color: var(--rk-fg);
+}
+
+[data-conversation-region="chat"] h1 {
+  font-size: var(--rk-text-heading1);
+  line-height: var(--rk-text-heading1-lh);
+  letter-spacing: var(--rk-text-heading1-ls);
+  margin-bottom: 0.5em;
+}
+
+[data-conversation-region="chat"] h2 {
+  font-size: var(--rk-text-heading2);
+  line-height: var(--rk-text-heading2-lh);
+  letter-spacing: var(--rk-text-heading2-ls);
+  margin-bottom: 0.4em;
+}
+
+[data-conversation-region="chat"] h3 {
+  font-size: var(--rk-text-heading3);
+  line-height: var(--rk-text-heading3-lh);
+  letter-spacing: var(--rk-text-heading3-ls);
+}
+
+[data-conversation-region="chat"] h4 {
+  font-size: var(--rk-text-body-lg);
+  line-height: var(--rk-text-body-lg-lh);
+}
+
+[data-conversation-region="chat"] a {
+  color: var(--rk-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+[data-conversation-region="chat"] strong {
+  font-weight: var(--rk-weight-semibold);
+  color: var(--rk-fg);
+}
+
+[data-conversation-region="chat"] blockquote {
+  margin-inline: 0;
+  padding: 2px 0 2px 14px;
+  border-left: 2px solid var(--rk-border);
+  color: var(--rk-muted-fg);
+  background: transparent;
+}
+
+[data-conversation-region="chat"] hr {
+  border: none;
+  height: 1px;
+  background: var(--rk-border);
+}
+
+[data-conversation-region="chat"] ul li::marker,
+[data-conversation-region="chat"] ol li::marker {
+  color: var(--rk-faint-fg);
+}
+
+[data-conversation-region="chat"] code {
+  border-radius: 5px;
+  background: var(--rk-muted);
+  color: var(--rk-fg);
+  font-family: var(--rk-font-mono);
+  font-size: 13px;
+}
+
+[data-conversation-region="chat"] pre {
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-md) !important;
+  background: var(--rk-card) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+[data-conversation-region="chat"] pre code {
+  color: var(--rk-fg);
+  background: transparent;
+}
+
+[data-conversation-region="chat"] table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--rk-border);
+  border-radius: var(--rk-radius-md);
+  overflow: hidden;
+}
+
+[data-conversation-region="chat"] th {
+  background: var(--rk-card);
+  color: var(--rk-fg);
+  font-weight: var(--rk-weight-semibold);
+}
+
+[data-conversation-region="chat"] th,
+[data-conversation-region="chat"] td {
+  border-color: var(--rk-border);
+}
+
+[data-conversation-region="chat"] img,
+[data-conversation-region="chat"] video {
+  border-radius: var(--rk-radius-md);
+  border: 1px solid var(--rk-border);
+}
+
+[data-conversation-region="chat"] kbd {
+  border: 1px solid var(--rk-border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--rk-card);
+  padding: 1px 5px;
+  font-size: 0.86em;
+}
+
+/* Tool calls: quiet Rakazo cards with a hairline. */
+[data-chat-flow-kind="tool-call"] [role="button"][data-state] {
+  background: var(--rk-card) !important;
+  border: 1px solid transparent;
+  border-radius: var(--rk-radius-md) !important;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+[data-chat-flow-kind="tool-call"] [role="button"][data-state]:hover {
+  background: color-mix(in srgb, var(--rk-card) 80%, var(--rk-fg) 6%) !important;
+  border-color: var(--rk-border);
+}
+
+[data-chat-flow-kind="tool-call"] [role="button"][data-state] svg {
+  color: var(--rk-muted-fg);
+}
+
+[data-chat-flow-kind="tool-call"] [role="button"][data-state="error"] {
+  border-color: var(--rk-destructive);
+  background: color-mix(in srgb, var(--rk-destructive) 8%, var(--rk-bg)) !important;
+}
+
+[data-chat-flow-kind="tool-call"] [class*="_title"],
+[data-chat-flow-kind="tool-call"] [class*="_summary"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+}
+
+/* Reasoning / process disclosures. */
+[data-process-activity],
+[data-disclosure-row] {
+  border-radius: var(--rk-radius-sm);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[data-process-activity]:hover,
+[data-disclosure-row]:hover {
+  background: var(--rk-accent);
+}
+
+[data-step-process-body] {
+  border-left: 1px solid var(--rk-border);
+  margin-left: 6px;
+  padding-left: 14px;
+}
+
+[data-chat-flow-kind="turn-process"] [class*="_label"],
+[data-chat-flow-kind="turn-process"] [class*="_title"] {
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  color: var(--rk-muted-fg);
+}
+
+[data-turn-start] {
+  border-color: var(--rk-border);
+}
+
+[data-shimmer-decoration] {
+  opacity: 0.4;
+}
+
+/* Message hover actions. */
+[data-chat-flow-kind="user"] [class*="_actions"] {
+  opacity: 0;
+  transition: opacity 140ms ease;
+}
+
+[data-chat-flow-kind="user"]:hover [class*="_actions"],
+[data-chat-flow-kind="user"] [class*="_actions"]:focus-within {
+  opacity: 1;
+}
+
+[data-chat-flow-kind="user"] [class*="_action"],
+[data-chat-flow-kind="user"] [class*="_action"] svg {
+  border-radius: var(--rk-radius-pill);
+  color: var(--rk-muted-fg);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[data-chat-flow-kind="user"] [class*="_action"]:hover {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg);
+}
+
+[data-conversation-scroll] [class*="_copy"],
+pre button {
+  border-radius: var(--rk-radius-sm);
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+pre button:hover {
+  background: var(--rk-accent);
+}
+
+[data-conversation-region="chat"] [class*="_citation"] {
+  border-radius: var(--rk-radius-sm);
+  background: var(--rk-card);
+}
+
+/* --------------------------------------------------------------------------
+   8. Menus, dialogs, listboxes, tooltips, toasts
+   -------------------------------------------------------------------------- */
+
+[role="menu"] {
+  background: var(--rk-popover) !important;
+  border: 1px solid var(--rk-border) !important;
+  border-radius: var(--rk-radius-lg) !important;
+  box-shadow: var(--rk-shadow-lg) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  padding: 4px !important;
+}
+
+[role="menuitem"],
+[role="option"] {
+  border-radius: var(--rk-radius-sm) !important;
+  color: var(--rk-popover-fg);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  font-weight: var(--rk-weight-medium);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+[role="menuitem"]:hover,
+[role="menuitem"]:focus-visible,
+[role="option"]:hover,
+[role="option"][data-selected] {
+  background: var(--rk-accent) !important;
+  color: var(--rk-fg) !important;
+}
+
+[role="menuitem"]:hover svg,
+[role="option"]:hover svg {
+  color: var(--rk-fg);
+}
+
+[role="listbox"] {
+  background: var(--rk-popover) !important;
+  border: 1px solid var(--rk-border) !important;
+  border-radius: var(--rk-radius-lg) !important;
+  box-shadow: var(--rk-shadow-lg) !important;
+  padding: 4px !important;
+}
+
+/* Dialogs are rounded sheets: 20px, a hairline and a soft ambient shadow. */
+[role="dialog"]:not(.gb-surface):not(.gb-page) {
+  background: var(--rk-dialog) !important;
+  border: 1px solid var(--rk-border) !important;
+  border-radius: var(--rk-radius-2xl) !important;
+  box-shadow: var(--rk-shadow-lg) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  color: var(--rk-fg);
+}
+
+[role="dialog"]:not(.gb-surface) h1,
+[role="dialog"]:not(.gb-surface) h2,
+[role="dialog"]:not(.gb-surface) h3 {
+  font-family: var(--rk-font-sans);
+  letter-spacing: var(--rk-text-heading3-ls);
+  font-weight: var(--rk-weight-semibold);
+}
+
+[role="dialog"] h1 {
+  font-size: var(--rk-text-heading1);
+  line-height: var(--rk-text-heading1-lh);
+  letter-spacing: var(--rk-text-heading1-ls);
+}
+
+[role="dialog"] h2 {
+  font-size: var(--rk-text-heading2);
+  line-height: var(--rk-text-heading2-lh);
+  letter-spacing: var(--rk-text-heading2-ls);
+}
+
+[role="dialog"] h3 {
+  font-size: var(--rk-text-heading3);
+  line-height: var(--rk-text-heading3-lh);
+}
+
+[role="dialog"]:not(.gb-surface) button {
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+[role="dialog"]:not(.gb-surface) [class*="_navCell"],
+[role="dialog"]:not(.gb-surface) [class*="_navItem"] {
+  border-radius: var(--rk-radius-sm);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+}
+
+[role="dialog"]:not(.gb-surface) [class*="_navCell"]:hover,
+[role="dialog"]:not(.gb-surface) [class*="_navItem"]:hover {
+  background: var(--rk-accent) !important;
+}
+
+[role="dialog"]:not(.gb-surface) [class*="_navCell"][class*="_active"],
+[role="dialog"]:not(.gb-surface) [class*="_navItem"][class*="_active"] {
+  background: var(--rk-sidebar-accent) !important;
+  box-shadow: none;
+  color: var(--rk-fg);
+}
+
+[role="dialog"] [data-slot="dialog-overlay"],
+[data-slot="dialog-overlay"] {
+  background: var(--rk-overlay) !important;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[role="tooltip"] {
+  background: var(--rk-fg) !important;
+  border: none;
+  border-radius: var(--rk-radius-sm) !important;
+  color: var(--rk-bg);
+  font-size: var(--rk-text-caption);
+  line-height: var(--rk-text-caption-lh);
+  letter-spacing: var(--rk-text-caption-ls);
+  box-shadow: var(--rk-shadow-sm);
+}
+
+[class*="_toast"] {
+  background: var(--rk-fg) !important;
+  color: var(--rk-bg) !important;
+  border-radius: var(--rk-radius-lg) !important;
+  border: none;
+  box-shadow: var(--rk-shadow-md);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+[class*="_toast"] button {
+  color: inherit;
+}
+
+[role="status"] {
+  color: var(--rk-muted-fg);
+  font-size: var(--rk-text-body-sm);
+  line-height: var(--rk-text-body-sm-lh);
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+  border-radius: var(--rk-radius-md);
+  font-family: var(--rk-font-sans);
+  font-size: var(--rk-text-body);
+  line-height: var(--rk-text-body-lh);
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+textarea:focus {
+  border-color: var(--rk-ring);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--rk-ring) 30%, transparent);
+}
+
+[data-slot="settings"] [class*="_card"] {
+  border-radius: var(--rk-radius-lg);
+  border-color: var(--rk-border) !important;
+  background: var(--rk-dialog);
+  transition: border-color 140ms ease;
+}
+
+[data-slot="settings"] [class*="_card"]:hover {
+  border-color: var(--rk-input) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. Misc: skeletons, attachments, plugin brand seats
+   -------------------------------------------------------------------------- */
+
+[class*="_skeleton"] {
+  background: var(--rk-muted) !important;
+  background-image: none !important;
+  animation: rk-pulse 1.6s ease-in-out infinite;
+}
+
+/* Sidebar brand seats (decorations/index.js). */
+.grok-brandmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--rk-fg);
+}
+
+.grok-brandmark > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.grok-brandname {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--rk-fg);
+  font-size: var(--rk-text-body);
+  line-height: var(--rk-text-body-lh);
+  font-weight: var(--rk-weight-semibold);
+  letter-spacing: -0.011em;
+}
+
+/* --------------------------------------------------------------------------
+   10. Motion + reduced motion
+   -------------------------------------------------------------------------- */
+
+@keyframes rk-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rk-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes rk-rise {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-slot="root"] {
+  animation: rk-fade 180ms ease-out both;
+}
+
+/* The bot identity pill floats in with the animated avatar. */
+.gb-idchip {
+  animation: rk-rise 220ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

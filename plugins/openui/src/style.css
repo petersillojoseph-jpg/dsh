@@ -1,0 +1,9 @@
+.dsh-openui-trigger { border:0; background:transparent; color:inherit; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:20px }
+.dsh-openui-trigger:hover { background:#8882 }
+.dsh-openui-backdrop { position:fixed; inset:0; z-index:10000; background:#0007; display:flex; justify-content:flex-end }
+.dsh-openui-panel { width:min(760px,100%); height:100%; background:var(--dsw-alias-bg-base,#fff); color:var(--dsw-alias-label-primary,#222); display:flex; flex-direction:column; box-shadow:0 0 30px #0004; font:14px system-ui }
+.dsh-openui-panel header { display:flex; justify-content:space-between; padding:18px 24px; border-bottom:1px solid #8883; align-items:center }
+.dsh-openui-panel header strong,.dsh-openui-panel header small { display:block }.dsh-openui-panel header strong{font-size:18px}.dsh-openui-panel header small{opacity:.6;margin-top:4px}
+.dsh-openui-panel button { cursor:pointer; border:0; border-radius:9px; padding:8px 12px; background:#8882; color:inherit; margin-left:5px }.dsh-openui-panel button:disabled{opacity:.45;cursor:default}
+.dsh-openui-messages { overflow:auto; flex:1; padding:24px; display:flex; flex-direction:column; gap:18px }.dsh-openui-user { align-self:flex-end; background:#8882; border-radius:16px; padding:11px 15px; white-space:pre-wrap; max-width:85% }.dsh-openui-result{min-width:0}.dsh-openui-error{color:#c33}
+.dsh-openui-panel form { padding:16px 24px; border-top:1px solid #8883 }.dsh-openui-panel textarea,.dsh-openui-setup input{width:100%; box-sizing:border-box; border:1px solid #8885; border-radius:10px; padding:10px; background:transparent; color:inherit; font:inherit; resize:vertical}.dsh-openui-panel form div{text-align:right;margin-top:8px}.dsh-openui-setup{padding:12px 24px;border-bottom:1px solid #8883}.dsh-openui-setup p{font-size:12px;line-height:1.5}.dsh-openui-setup a{color:#7160d8}

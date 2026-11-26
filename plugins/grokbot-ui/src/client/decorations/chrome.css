@@ -1,0 +1,144 @@
+/* ==========================================================================
+   Grokbot UI — chrome decorations
+   --------------------------------------------------------------------------
+   The plugin's own seats in the shipped shell: the sidebar brand (animated
+   Rakazo mascot + wordmark) and the floating bot identity pill in a bot
+   session's header. Palette and type scale come from the Rakazo design tokens
+   installed by theme/index.js (`--rk-*` + `--dsw-*` overrides).
+
+   The identity chip's base styles live in identity/index.jsx (owned by the
+   bot-screens teammate); this sheet layers the Rakazo product look on top, so
+   it uses !important for the few properties that must win regardless of load
+   order.
+   ========================================================================== */
+
+/* Hide the shipped brand artwork when our seats render. */
+[data-slot="sidebar.brand.mark"]:has(.grok-brandmark) > svg,
+[data-slot="sidebar.brand.name"]:has(.grok-brandname) > svg {
+  display: none !important;
+}
+
+.grok-brandmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--rk-fg, #1c1c1c);
+  overflow: visible;
+}
+
+.grok-brandmark > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.grok-brandname {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  color: var(--rk-fg, #1c1c1c);
+  font-family: var(--rk-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  font-size: var(--rk-text-body, 14px);
+  line-height: var(--rk-text-body-lh, 20px);
+  font-weight: var(--rk-weight-semibold, 600);
+  letter-spacing: -0.011em;
+}
+
+/* --------------------------------------------------------------------------
+   Floating bot identity pill in the session header
+   -------------------------------------------------------------------------- */
+
+.gb-idchip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px !important;
+  height: 36px !important;
+  padding: 4px 14px 4px 4px !important;
+  margin-inline-end: 6px !important;
+  border: 1px solid var(--rk-border, rgba(28, 28, 28, 0.12)) !important;
+  border-radius: 999px !important;
+  background: var(--rk-popover, #ffffff) !important;
+  box-shadow: var(--rk-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.06)) !important;
+  color: var(--rk-fg, #1c1c1c) !important;
+  font-family: var(--rk-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif) !important;
+  font-size: var(--rk-text-body-lg, 15px) !important;
+  line-height: var(--rk-text-body-lg-lh, 22px) !important;
+  font-weight: var(--rk-weight-medium, 500) !important;
+  letter-spacing: -0.011em !important;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.gb-idchip:hover {
+  border-color: var(--rk-input, rgba(28, 28, 28, 0.24)) !important;
+  box-shadow: var(--rk-shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.08)) !important;
+}
+
+.gb-idchip-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--rk-fg, #1c1c1c);
+}
+
+/* The presence dot, backed by real session state. Working is the one green;
+   waiting uses the warning amber, error the destructive red, idle the faint ink. */
+.gb-idchip-dot {
+  width: 6px !important;
+  height: 6px !important;
+  flex: none;
+  border-radius: 50%;
+  background: var(--rk-faint-fg, #1c1c1c8f) !important;
+  box-shadow: 0 0 0 2px var(--rk-popover, #ffffff) !important;
+}
+
+.gb-idchip-dot--working {
+  background: var(--rk-working-dot, #10ab61) !important;
+}
+
+.gb-idchip-dot--waiting {
+  background: var(--rk-warning, #aa6300) !important;
+}
+
+.gb-idchip-dot--error {
+  background: var(--rk-destructive, #cd2834) !important;
+}
+
+.gb-idchip-dot--idle {
+  background: var(--rk-faint-fg, #1c1c1c8f) !important;
+}
+
+/* Sidebar session-row avatar (identity decoration). */
+.gb-rowavatar {
+  display: block;
+  flex: none;
+  border-radius: 50%;
+}
+
+/* Hero cluster of bot avatars above the composer. */
+.gb-hero-cluster {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gb-hero-cluster-item {
+  display: inline-flex;
+  margin-inline-start: -12px;
+  filter: none;
+}
+
+.gb-hero-cluster-item:first-child {
+  margin-inline-start: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gb-idchip {
+    animation: none !important;
+    transition: none !important;
+  }
+}

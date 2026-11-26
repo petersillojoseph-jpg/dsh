@@ -1,0 +1,1141 @@
+/* =========================================================================
+   Grokbot UI — sidebar column, main-column chrome and the room surface
+   -------------------------------------------------------------------------
+   Geometry follows Rakazo (Apache-2.0,
+   references/rakazo/apps/web/src/pages/shell/sidebar): a 280px column with
+   8px inline padding, 36px rows on an 8px rhythm, hairline footer groups and
+   a 56px icon rail when collapsed.
+
+   Every selector is either scoped under `.gb-s` (the sidebar occupant) or
+   under a `gb-` class that only this plugin renders, so no host element in the
+   Conversation, composer, tool cards or approvals is restyled here.
+   The token variables (--rk-*/--gb-*) live in styles.css; the light/dark
+   *values* are re-declared on `.gb-s` below because the sidebar and the room
+   layer are siblings of the `.gb-root` elements that carry them.
+   ========================================================================= */
+
+/* ---------------------------------------------------------------- tokens */
+
+:where(.gb-s) {
+  --gb-bg: var(--rk-bg, #ffffff);
+  --gb-surface: var(--rk-dialog, #ffffff);
+  --gb-surface-2: var(--rk-card, #f2f2f2);
+  --gb-elevated: var(--rk-popover, #ffffff);
+  --gb-fg: var(--rk-fg, #1c1c1c);
+  --gb-fg-2: var(--rk-muted-fg, #1c1c1cad);
+  --gb-muted: var(--rk-faint-fg, #1c1c1c8f);
+  --gb-line: var(--rk-border, #1c1c1c1f);
+  --gb-line-strong: var(--rk-input, #1c1c1c3d);
+  --gb-hover: var(--rk-accent, #1c1c1c0f);
+  --gb-hover-strong: var(--rk-sidebar-accent, #1c1c1c14);
+  --gb-sidebar: var(--rk-sidebar, #f7f7f7);
+  --gb-sidebar-fg: var(--rk-sidebar-fg, #1c1c1c);
+  --gb-sidebar-accent: var(--rk-sidebar-accent, #1c1c1c14);
+  --gb-sidebar-accent-fg: var(--rk-sidebar-accent-fg, #1c1c1c);
+  --gb-sidebar-line: var(--rk-sidebar-border, #1c1c1c1f);
+  --gb-accent: var(--rk-link, #0b6dd3);
+  --gb-ring: var(--rk-ring, #1e86fc);
+  --gb-primary: var(--rk-primary, #1c1c1c);
+  --gb-primary-fg: var(--rk-primary-fg, #fcfcfc);
+  --gb-working: var(--rk-status-working, #0b6dd3);
+  --gb-working-dot: var(--rk-working-dot, #10ab61);
+  --gb-danger: var(--rk-destructive, #cd2834);
+  --gb-success: var(--rk-success, #00854a);
+  --gb-shadow-sm: var(--rk-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04));
+  --gb-font: var(--rk-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --gb-radius-sm: var(--rk-radius-sm, 8px);
+  --gb-radius-md: var(--rk-radius-md, 10px);
+  --gb-radius-lg: var(--rk-radius-lg, 12px);
+  --gb-radius-pill: 999px;
+  --gb-caption: var(--rk-text-caption, 11px);
+  --gb-label: var(--rk-text-label, 12px);
+  --gb-body-sm: var(--rk-text-body-sm, 13px);
+  --gb-body: var(--rk-text-body, 14px);
+
+  /* Sidebar geometry (Rakazo: 8px inline padding, 4px paint inset). */
+  --gb-s-pad: 12px;
+  --gb-s-paint: 4px;
+  --gb-s-row: 36px;
+  --gb-s-rail-w: 56px;
+
+  color: var(--gb-fg);
+  font-family: var(--gb-font);
+  font-size: var(--gb-body-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+  :where(body:not([data-ds-light-theme])) .gb-s {
+    --gb-bg: var(--rk-bg, #0a0a0a);
+    --gb-surface: var(--rk-dialog, #161616);
+    --gb-surface-2: var(--rk-card, #232323);
+    --gb-elevated: var(--rk-popover, #232323);
+    --gb-fg: var(--rk-fg, #f5f5f5);
+    --gb-fg-2: var(--rk-muted-fg, #f5f5f5a8);
+    --gb-muted: var(--rk-faint-fg, #f5f5f58a);
+    --gb-line: var(--rk-border, #f5f5f51a);
+    --gb-line-strong: var(--rk-input, #f5f5f538);
+    --gb-hover: var(--rk-accent, #f5f5f51a);
+    --gb-hover-strong: var(--rk-sidebar-accent, #f5f5f514);
+    --gb-sidebar: var(--rk-sidebar, #111214);
+    --gb-sidebar-fg: var(--rk-sidebar-fg, #f5f5f5);
+    --gb-sidebar-accent: var(--rk-sidebar-accent, #f5f5f51a);
+    --gb-sidebar-accent-fg: var(--rk-sidebar-accent-fg, #f5f5f5);
+    --gb-sidebar-line: var(--rk-sidebar-border, #f5f5f51a);
+    --gb-primary: var(--rk-primary, #f5f5f5);
+    --gb-primary-fg: var(--rk-primary-fg, #121212);
+    --gb-working-dot: var(--rk-working-dot, #0e9f5a);
+    --gb-danger: var(--rk-destructive, #ff6463);
+    --gb-success: var(--rk-success, #00ba69);
+  }
+}
+
+body[data-ds-dark-theme] :where(.gb-s) {
+  --gb-bg: var(--rk-bg, #0a0a0a);
+  --gb-surface: var(--rk-dialog, #161616);
+  --gb-surface-2: var(--rk-card, #232323);
+  --gb-elevated: var(--rk-popover, #232323);
+  --gb-fg: var(--rk-fg, #f5f5f5);
+  --gb-fg-2: var(--rk-muted-fg, #f5f5f5a8);
+  --gb-muted: var(--rk-faint-fg, #f5f5f58a);
+  --gb-line: var(--rk-border, #f5f5f51a);
+  --gb-line-strong: var(--rk-input, #f5f5f538);
+  --gb-hover: var(--rk-accent, #f5f5f51a);
+  --gb-hover-strong: var(--rk-sidebar-accent, #f5f5f514);
+  --gb-sidebar: var(--rk-sidebar, #111214);
+  --gb-sidebar-fg: var(--rk-sidebar-fg, #f5f5f5);
+  --gb-sidebar-accent: var(--rk-sidebar-accent, #f5f5f51a);
+  --gb-sidebar-accent-fg: var(--rk-sidebar-accent-fg, #f5f5f5);
+  --gb-sidebar-line: var(--rk-sidebar-border, #f5f5f51a);
+  --gb-primary: var(--rk-primary, #f5f5f5);
+  --gb-primary-fg: var(--rk-primary-fg, #121212);
+  --gb-working-dot: var(--rk-working-dot, #0e9f5a);
+  --gb-danger: var(--rk-destructive, #ff6463);
+  --gb-success: var(--rk-success, #00ba69);
+}
+
+/* ------------------------------------------------------------------ base */
+
+.gb-s *,
+.gb-s *::before,
+.gb-s *::after {
+  box-sizing: border-box;
+}
+
+.gb-s button {
+  font-family: inherit;
+}
+
+.gb-s svg {
+  display: block;
+}
+
+.gb-s :focus-visible {
+  outline: 2px solid var(--gb-ring);
+  outline-offset: -1px;
+}
+
+.gb-s ::selection {
+  background: color-mix(in srgb, var(--gb-ring) 22%, transparent);
+  color: var(--gb-fg);
+}
+
+/* The column: the frame owns the grid track; this fills it.
+   Higher specificity than the :where() token blocks above, so the local
+   declarations resolve to the theme values instead of `unset`. */
+.gb-s.gb-s {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  /* 12px inline breathing room on each side. border-box is what makes it
+     breathing room: the frame hands us a fixed-width track (280px), so with
+     content-box the padding pushed the column to 304px and the right edge
+     (counts, chevrons, scrollbar) was clipped by the track. The literal sits
+     before the var so the padding survives where `--gb-s-pad` does not
+     resolve. */
+  box-sizing: border-box;
+  padding: 6px 12px 6px;
+  padding: 6px var(--gb-s-pad, 12px) 6px;
+  background: var(--gb-sidebar);
+  color: var(--gb-sidebar-fg);
+}
+
+.gb-s-rail {
+  align-items: center;
+  padding: 8px 0 6px;
+}
+
+.gb-s-scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gb-sidebar-line) transparent;
+  /* The 6px scrollbar sits in a reserved right-hand gutter. Left edge stays at
+     0 so the scroll content lines up with the section tabs above it; the
+     matching right-side inset lives on the list/header rules instead. */
+  scrollbar-gutter: stable;
+  padding: 0 0 8px;
+}
+
+.gb-s-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.gb-s-scroll::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--gb-sidebar-line);
+}
+
+/* ----------------------------------------------------------------- brand */
+
+.gb-s-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 44px;
+  padding: 0 4px 0 8px;
+  margin-bottom: 6px;
+  flex: none;
+}
+
+.gb-s-brandmark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+
+.gb-s-wordmark {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--gb-sidebar-fg);
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.014em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gb-s-close,
+.gb-s-iconbtn {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  color: var(--gb-fg-2);
+  cursor: pointer;
+}
+
+.gb-s-iconbtn:hover,
+.gb-s-close:hover {
+  background: var(--gb-hover-strong);
+  color: var(--gb-fg);
+}
+
+/* ------------------------------------------------------- new session row */
+
+.gb-s-primary {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  height: 38px;
+  margin: 0 calc(var(--gb-s-paint) + 1px) 10px;
+  padding: 0 12px;
+  border: 1px solid var(--gb-line-strong);
+  border-radius: var(--gb-radius-md);
+  background: var(--gb-surface);
+  color: var(--gb-fg);
+  font-size: var(--gb-body-sm);
+  font-weight: 550;
+  cursor: pointer;
+  transition: background-color 0.14s ease, border-color 0.14s ease;
+}
+
+.gb-s-primary:hover {
+  background: var(--gb-surface-2);
+}
+
+.gb-s-primary svg {
+  flex: none;
+  color: var(--gb-fg-2);
+}
+
+.gb-s-rail .gb-s-primary {
+  width: 36px;
+  height: 36px;
+  margin: 0 0 10px;
+  padding: 0;
+  justify-content: center;
+  border-color: transparent;
+  background: transparent;
+}
+
+.gb-s-rail .gb-s-primary:hover {
+  background: var(--gb-hover-strong);
+}
+
+/* ---------------------------------------------------------------- search */
+
+.gb-s-search {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  margin: 0 calc(var(--gb-s-paint)) 8px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-hover);
+  color: var(--gb-muted);
+  transition: border-color 0.14s ease, background-color 0.14s ease;
+}
+
+.gb-s-search:focus-within {
+  border-color: var(--gb-line-strong);
+  background: var(--gb-surface);
+}
+
+.gb-s-search svg {
+  flex: none;
+}
+
+.gb-s-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--gb-fg);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+}
+
+.gb-s-search input::placeholder {
+  color: var(--gb-muted);
+}
+
+/* ---------------------------------------------------------------- rows */
+
+.gb-s-section {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 0;
+}
+
+.gb-s-section + .gb-s-section {
+  margin-top: 6px;
+}
+
+.gb-s-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  margin-top: 8px;
+  padding: 0 10px;
+  color: var(--gb-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.gb-s-label-count {
+  margin-inline-start: auto;
+  color: var(--gb-muted);
+  font-weight: 500;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.gb-srow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: var(--gb-s-row);
+  padding: 5px calc(10px - var(--gb-s-paint));
+  border: 0;
+  border-inline: var(--gb-s-paint) solid transparent;
+  border-radius: var(--gb-radius-md);
+  background: transparent;
+  background-clip: padding-box;
+  color: var(--gb-sidebar-fg);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-srow:hover {
+  background-color: var(--gb-hover);
+}
+
+.gb-srow.is-active {
+  background-color: var(--gb-sidebar-accent);
+  color: var(--gb-sidebar-accent-fg);
+}
+
+.gb-srow.is-channel {
+  background-color: var(--gb-hover);
+}
+
+.gb-srow-avatar {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+}
+
+.gb-srow-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.gb-srow-title,
+.gb-srow-sub {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gb-srow-title {
+  color: inherit;
+  font-size: var(--gb-body-sm);
+  font-weight: 550;
+  line-height: 18px;
+}
+
+.gb-srow-sub {
+  color: var(--gb-fg-2);
+  font-size: var(--gb-caption);
+  font-weight: 450;
+  line-height: 15px;
+}
+
+.gb-srow-chevron {
+  display: flex;
+  flex: none;
+  align-items: center;
+  color: var(--gb-muted);
+  transition: transform 0.16s ease;
+}
+
+.gb-srow[aria-expanded="true"] .gb-srow-chevron,
+.gb-srow:has(> .gb-srow-main[aria-expanded="true"]) .gb-srow-chevron {
+  transform: rotate(90deg);
+}
+
+/* Presence dot: a ring of the row background keeps it legible on any fill. */
+.gb-sdot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 2px var(--gb-sidebar);
+}
+
+.gb-srow:hover .gb-sdot,
+.gb-srow.is-active .gb-sdot {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gb-sidebar-accent) 55%, var(--gb-sidebar));
+}
+
+.gb-sdot--working {
+  background: var(--gb-working-dot);
+}
+
+.gb-sdot--waiting {
+  background: var(--gb-working);
+  animation: gb-sdot-pulse 1.6s ease-in-out infinite;
+}
+
+.gb-sdot--error {
+  background: var(--gb-danger);
+}
+
+@keyframes gb-sdot-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* Session rows: smaller type, a leading glyph instead of an avatar. */
+.gb-schat {
+  min-height: 32px;
+  padding-block: 4px;
+}
+
+.gb-schat .gb-srow-title {
+  font-weight: 500;
+}
+
+.gb-schat.is-active .gb-srow-title {
+  font-weight: 600;
+}
+
+.gb-schat-mark {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--gb-fg) 6%, transparent);
+  color: var(--gb-fg-2);
+}
+
+.gb-schat.is-active .gb-schat-mark {
+  background: color-mix(in srgb, var(--gb-fg) 10%, transparent);
+  color: var(--gb-fg);
+}
+
+.gb-schat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gb-working-dot);
+}
+
+/* The expanded bot's inline list: aligned to its avatar, hairlined. */
+.gb-slist {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 1px 0 4px 23px;
+  padding-inline-start: 3px;
+  border-inline-start: 1px solid var(--gb-sidebar-line);
+  animation: gb-slist-in 0.16s ease both;
+}
+
+@keyframes gb-slist-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.gb-slist-empty {
+  padding: 2px 10px 6px;
+  color: var(--gb-muted);
+  font-size: var(--gb-caption);
+  line-height: 16px;
+}
+
+.gb-snew {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  color: var(--gb-fg-2);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-snew:hover {
+  background: var(--gb-hover);
+  color: var(--gb-fg);
+}
+
+
+/* The clickable name half of a bot row (the avatar opens its actions). */
+.gb-srow-main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Section tabs sit inside the top block, without a fill until active. */
+.gb-snav {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 32px;
+  width: 100%;
+  /* 10px right inset so the section counts sit off the edge as one column
+     instead of touching the sidebar's outer padding. Written without
+     `--gb-s-paint`: that token does not resolve here, and an invalid calc()
+     in a shorthand drops the WHOLE declaration (which is why the counts used
+     to sit flush at 0 padding). */
+  padding: 4px 10px;
+  border: 0;
+  border-inline: var(--gb-s-paint) solid transparent;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  background-clip: padding-box;
+  color: var(--gb-fg-2);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-snav:hover {
+  background: var(--gb-hover);
+  color: var(--gb-fg);
+}
+
+.gb-snav.is-active {
+  background: var(--gb-hover-strong);
+  color: var(--gb-fg);
+  font-weight: 550;
+}
+
+.gb-snav-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  color: inherit;
+}
+
+.gb-snav-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Per-bot actions menu (edit, look, room, delete). */
+.gb-smenu {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 4px 18px;
+  padding: 4px;
+  border: 1px solid var(--gb-line);
+  border-radius: var(--gb-radius-md);
+  background: var(--gb-elevated);
+  box-shadow: var(--gb-shadow-sm);
+  animation: gb-slist-in 0.14s ease both;
+}
+
+.gb-sitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  color: var(--gb-fg);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-sitem:hover {
+  background: var(--gb-hover);
+}
+
+.gb-sitem svg {
+  flex: none;
+  color: var(--gb-fg-2);
+}
+
+.gb-sitem--danger,
+.gb-sitem--danger svg {
+  color: var(--gb-danger);
+}
+
+/* "All chats" workspace group headers.
+ *
+ * Root cause of the "name55" bug: this button never inherited `.gb-s-label`'s
+ * layout. The markup uses `gb-slabel` (no hyphen) while the base rule is
+ * `.gb-s-label`, which no element in the tree carries — so the head stayed a
+ * UA `inline-block` <button> and its name/count laid out inline, where `gap`
+ * and `flex` are inert and the count's `margin-inline-start: auto` had no
+ * free space to claim. Measured 0px between name and count (control
+ * `.gb-snav`: 9px). So the layout is declared here in full rather than
+ * inherited from a rule that does not match. */
+.gb-slabel.gb-sgrouphead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 26px;
+  margin-top: 8px;
+  /* Match `.gb-snav`'s geometry so the group count lands on the same right
+     edge as the section-tab counts above it. The head lives inside the
+     scroller, which is 6px narrower than the tabs (reserved scrollbar
+     gutter), and a literal 10px inset here made the two count columns visibly
+     disagree. No inline inset: the scroller's gutter already provides the
+     right-side breathing room. */
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--gb-muted);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: start;
+}
+
+.gb-slabel.gb-sgrouphead:hover {
+  color: var(--gb-fg);
+}
+
+.gb-sgroup-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.gb-s-foot {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 1px;
+  padding-top: 6px;
+  border-top: 1px solid var(--gb-sidebar-line);
+}
+
+.gb-sws {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  width: 100%;
+  padding: 3px 10px;
+  border: 0;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  color: var(--gb-fg-2);
+  font: inherit;
+  font-size: var(--gb-caption);
+  line-height: 15px;
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-sws:hover {
+  background: var(--gb-hover);
+  color: var(--gb-fg);
+}
+
+.gb-sws strong {
+  color: var(--gb-fg);
+  font-weight: 550;
+}
+
+.gb-sws-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gb-sws svg:last-child {
+  flex: none;
+  margin-inline-start: auto;
+  color: var(--gb-muted);
+}
+
+.gb-sws-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 4px;
+  padding: 4px 0;
+  border-top: 1px solid var(--gb-sidebar-line);
+  animation: gb-slist-in 0.16s ease both;
+}
+
+.gb-sfoot {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 32px;
+  width: 100%;
+  padding: 4px calc(10px - var(--gb-s-paint));
+  border: 0;
+  border-inline: var(--gb-s-paint) solid transparent;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  background-clip: padding-box;
+  color: var(--gb-fg-2);
+  font: inherit;
+  font-size: var(--gb-body-sm);
+  text-align: start;
+  cursor: pointer;
+}
+
+.gb-sfoot:hover {
+  background: var(--gb-hover);
+  color: var(--gb-fg);
+}
+
+.gb-sfoot.is-active {
+  background: var(--gb-hover-strong);
+  color: var(--gb-fg);
+}
+
+.gb-sfoot svg {
+  flex: none;
+}
+
+.gb-sfoot .gb-foot-kbd {
+  margin-inline-start: auto;
+  color: var(--gb-muted);
+  font-family: var(--gb-font);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.gb-serr {
+  margin: 4px 4px 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--gb-line);
+  border-radius: var(--gb-radius-sm);
+  background: color-mix(in srgb, var(--gb-danger) 7%, transparent);
+  color: var(--gb-fg-2);
+  font-size: var(--gb-caption);
+  line-height: 16px;
+}
+
+.gb-serr strong {
+  display: block;
+  color: var(--gb-danger);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ rail */
+
+.gb-srail {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Tooltip: CSS-only, shows on hover/focus of a rail button. */
+.gb-stip {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  z-index: 60;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  max-width: 260px;
+  padding: 5px 9px;
+  border: 1px solid var(--gb-line);
+  border-radius: var(--gb-radius-sm);
+  background: var(--gb-elevated);
+  box-shadow: var(--gb-shadow-sm);
+  color: var(--gb-fg);
+  font-size: var(--gb-label);
+  line-height: 16px;
+  white-space: nowrap;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.gb-srail:hover > .gb-stip,
+.gb-srail:focus-within > .gb-stip {
+  display: flex;
+}
+
+.gb-s-rail .gb-srail-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--gb-radius-md);
+  background: transparent;
+  color: var(--gb-fg-2);
+  cursor: pointer;
+}
+
+.gb-s-rail .gb-srail-item:hover,
+.gb-s-rail .gb-srail-item.is-active {
+  background: var(--gb-hover-strong);
+  color: var(--gb-fg);
+}
+
+.gb-s-rail .gb-srail-stack {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: none;
+}
+
+.gb-s-rail .gb-srail-stack::-webkit-scrollbar {
+  display: none;
+}
+
+.gb-s-rail .gb-s-mark {
+  margin-bottom: 6px;
+}
+
+.gb-s-rail .gb-sdot {
+  right: 2px;
+  bottom: 2px;
+  box-shadow: 0 0 0 2px var(--gb-sidebar);
+}
+
+/* ------------------------------------------------------ header breadcrumb */
+
+.gb-scrumb {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  max-width: 220px;
+  height: 28px;
+  margin-inline-end: 6px;
+  padding: 0 10px 0 7px;
+  border: 1px solid var(--gb-line);
+  border-radius: var(--gb-radius-pill);
+  background: var(--gb-surface);
+  color: var(--gb-fg-2);
+  font-family: var(--gb-font);
+  font-size: var(--gb-label);
+  font-weight: 500;
+  line-height: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+}
+
+.gb-scrumb:hover {
+  border-color: var(--gb-line-strong);
+  background: var(--gb-surface-2);
+  color: var(--gb-fg);
+}
+
+.gb-scrumb svg {
+  flex: none;
+}
+
+.gb-scrumb-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --------------------------------------------------- shell.leading opener */
+
+.gb-slead {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gb-slead-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--gb-radius-sm);
+  background: transparent;
+  color: var(--gb-fg-2);
+  cursor: pointer;
+}
+
+.gb-slead-toggle:hover {
+  background: var(--gb-hover-strong);
+  color: var(--gb-fg);
+}
+
+/* ------------------------------------------------------------ room surface */
+
+/* Rooms own the whole centre column while a room is open. The layer is a
+   sibling of the frame inside the shell root, so no Conversation element is
+   restyled, hidden or unmounted. */
+/* The room surface is NOT the sidebar column: it is an overlay box that starts
+   at the centre column's left edge and fills the rest of the frame. It spells
+   out its own box + surface so nothing inherited from `.gb-s` (the column
+   width/padding) can shrink or punch a hole in it. */
+.gb-s.gb-sroom-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--gb-bg, #ffffff);
+  color: var(--gb-fg, #1c1c1c);
+}
+
+@keyframes gb-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gb-sroom-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--gb-line);
+}
+
+.gb-sroom-head h1 {
+  margin: 0;
+  color: var(--gb-fg);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 20px;
+}
+
+.gb-sroom-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--gb-fg-2);
+  font-size: var(--gb-label);
+  line-height: 16px;
+}
+
+.gb-sroom-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.gb-sroom-layer .gb-chat {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gb-sroom-layer .gb-transcript {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 0 8px;
+}
+
+.gb-sroom-layer .gb-composer {
+  padding: 8px 0 16px;
+  background: var(--gb-bg);
+}
+
+.gb-sroom-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+}
+
+@media (max-width: 760px) {
+  .gb-sroom-head {
+    padding: 8px 14px;
+  }
+
+  .gb-sroom-body {
+    padding: 0 14px;
+  }
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  .gb-s *,
+  .gb-s *::before,
+  .gb-s *::after,
+  .gb-s *,
+  .gb-s *::before,
+  .gb-s *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Subtle motion and clearer keyboard focus in the desktop experience. */
+.gb-srow, .gb-snav, .gb-sfoot, .gb-s-primary, .gb-srail-item {
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+.gb-srow:hover, .gb-snav:hover, .gb-sfoot:hover { transform: translateX(2px); }
+.gb-s-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 14px rgba(0,0,0,.12); }
+.gb-s button:focus-visible, .gb-s input:focus-visible { outline: 2px solid #8b6fe8; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .gb-srow, .gb-snav, .gb-sfoot, .gb-s-primary, .gb-srail-item { transition: none; }
+  .gb-srow:hover, .gb-snav:hover, .gb-sfoot:hover, .gb-s-primary:hover { transform: none; }
+}
+
+/* GPT selection is shown on the welcome card, not on sidebar rows. */
+.gb-srow.is-active:has(> .gb-srow-main) { background-color: transparent; box-shadow: none; color: var(--gb-sidebar-fg); }
+.gb-srow.is-active:has(> .gb-srow-main):hover { background-color: var(--gb-hover); }

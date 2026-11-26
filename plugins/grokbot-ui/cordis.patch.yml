@@ -1,0 +1,3 @@
+- insert:
+    - id: grokbot-ui
+      name: '@local/grokbot-ui'

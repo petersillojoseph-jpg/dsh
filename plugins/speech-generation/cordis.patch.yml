@@ -1,0 +1,3 @@
+- insert:
+    - id: dsh-speech-generation
+      name: '@local/dsh-speech-generation'
