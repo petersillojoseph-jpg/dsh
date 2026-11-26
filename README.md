@@ -17,4 +17,4 @@ This is a source backup of an existing customised installation, not a self-conta
 
 The installation this snapshot came from used `@deepseek-ai/dsh` version range `^0.2.2-rc.5`. Some features use external services and require their own API keys and may incur charges. Generated content and requests are sent to the relevant providers. Review the original plugin's licensing information in `plugins/grokbot-ui/LICENSES/` and `THIRD_PARTY_NOTICES.md`; no additional license is granted for other code in this snapshot.
 
-TLDR: Adds imagen, voice gen, video gen, a media library, dication, optional OpenUI integration, all through openrouter (all you need is an openrouter key)
+TLDR: Adds imagen, voice gen, video gen, a media library, dication, optional OpenUI integration, all through openrouter (all you need is an openrouter key). Also does visual overhaul and adds the ability to create GPT's which have the visual fatures of grokbot, with rakazo avatars.
