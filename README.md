@@ -9,6 +9,12 @@ A custom interface and plugin collection for [DeepSeek Harness](https://github.c
 
 The `desktop/` Electron wrapper is the original Mac snapshot. It expects a separately prepared `~/Applications/DeepSeek Harness Runtime`; the runtime and a packaged app are not included. macOS-native dictation requires that original wrapper and is not available when using the web interface alone. Grok dictation uses OpenRouter.
 
+## Demo
+
+### GPT interface
+![The DSH GPT interface](demo/UI.png)
+
+
 ## Requirements
 
 - Node.js **24.9 or newer**, npm, Git and pnpm. DSH `0.2.2-rc.1` and pnpm `12.15.0` were used for the Omarchy test. Other DSH versions, including the Mac snapshot's `0.2.2-rc.5`, have not been verified with this release.
