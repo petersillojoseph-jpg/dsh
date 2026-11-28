@@ -10,7 +10,7 @@
  *  - share visibility and pointer listeners across avatar instances,
  *  - keep a continuous elapsed-time clock across activity changes,
  *  - crossfade pose layers without a frame loop.
- * No setInterval / requestAnimationFrame / per-frame React state is used.
+ * Pointer updates are coalesced per frame; React state is not updated per frame.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react'
 
@@ -18,7 +18,10 @@ const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 const gazeTargets = new Set()
 let gazeListenerBound = false
+let gazeFrame = null, gazePoint = null
 function resetCursorGaze() {
+  if (gazeFrame !== null) cancelAnimationFrame(gazeFrame)
+  gazeFrame = null; gazePoint = null
   for (const element of gazeTargets) {
     if (!element.isConnected) { gazeTargets.delete(element); continue }
     element.style.setProperty('--avatar-gaze-x', '0px')
@@ -31,18 +34,28 @@ function resetCursorGazeWhenHidden() {
 }
 
 function updateCursorGaze(event) {
-  for (const element of gazeTargets) {
-    if (!element.isConnected) { gazeTargets.delete(element); continue }
-    const rect = element.getBoundingClientRect()
-    if (!rect.width || !rect.height) continue
-    // SVG gaze uses viewBox coordinates; this is ~4 rendered pixels per side at 62px.
-    const maxX = Math.min(6.45, rect.width * 0.104)
-    const maxY = Math.min(6.45, rect.height * 0.104)
-    const dx = Math.max(-maxX, Math.min(maxX, (event.clientX - rect.left - rect.width / 2) / rect.width * 2 * maxX))
-    const dy = Math.max(-maxY, Math.min(maxY, (event.clientY - rect.top - rect.height / 2) / rect.height * 2 * maxY))
-    element.style.setProperty('--avatar-gaze-x', `${dx}px`)
-    element.style.setProperty('--avatar-gaze-y', `${dy}px`)
-  }
+  gazePoint = { x: event.clientX, y: event.clientY }
+  if (gazeFrame !== null) return
+  gazeFrame = requestAnimationFrame(() => {
+    gazeFrame = null
+    if (!gazePoint) return
+    const point = gazePoint
+    const updates = []
+    for (const element of gazeTargets) {
+      if (!element.isConnected) { gazeTargets.delete(element); continue }
+      const rect = element.getBoundingClientRect()
+      if (!rect.width || !rect.height) continue
+      const maxX = Math.min(6.45, rect.width * 0.104)
+      const maxY = Math.min(6.45, rect.height * 0.104)
+      const dx = Math.max(-maxX, Math.min(maxX, (point.x - rect.left - rect.width / 2) / rect.width * 2 * maxX))
+      const dy = Math.max(-maxY, Math.min(maxY, (point.y - rect.top - rect.height / 2) / rect.height * 2 * maxY))
+      updates.push([element, dx, dy])
+    }
+    for (const [element, dx, dy] of updates) {
+      element.style.setProperty('--avatar-gaze-x', `${dx}px`)
+      element.style.setProperty('--avatar-gaze-y', `${dy}px`)
+    }
+  })
 }
 
 /** One global pointer listener updates visible avatar eyes without React renders. */

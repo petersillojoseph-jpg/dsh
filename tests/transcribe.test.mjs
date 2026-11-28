@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { transcribeAudio } from '../plugin/package/src/host/transcribe.js'
+import { transcribeAudio } from '../plugins/grokbot-ui/src/host/transcribe.js'
 const req = { headers: { host: 'localhost:1234', origin: 'http://localhost:1234', 'x-dsh-dictation': '1' } }
 const body = {audio: Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 0]).toString('base64'), type:'audio/webm'}
 const ctx = {credentials:{resolve:async name => { assert.equal(name, 'OPENROUTER_API_KEY'); return {value:'test-key'} }}}
