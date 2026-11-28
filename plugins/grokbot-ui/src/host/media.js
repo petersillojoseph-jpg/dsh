@@ -1,10 +1,12 @@
 import { readdir, stat } from 'node:fs/promises'
-import { createReadStream } from 'node:fs'
-import { join } from 'node:path'
+import { createReadStream, existsSync } from 'node:fs'
+import { join, dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { homedir } from 'node:os'
 import { jsonResponse } from './http.js'
 const runtime=join(homedir(),'Applications','DeepSeek Harness Runtime')
-const dirs={image:join(runtime,'dsh-image-generation','data','images'),video:join(runtime,'dsh-video-generation','data','videos'),audio:join(runtime,'dsh-speech-generation','data','audio')}
+const plugins=resolve(dirname(fileURLToPath(import.meta.url)),'../../..')
+const dirs=process.platform === 'darwin' && !existsSync(join(plugins,'image-generation','package.json')) ? {image:join(runtime,'dsh-image-generation','data','images'),video:join(runtime,'dsh-video-generation','data','videos'),audio:join(runtime,'dsh-speech-generation','data','audio')} : {image:join(plugins,'image-generation','data','images'),video:join(plugins,'video-generation','data','videos'),audio:join(plugins,'speech-generation','data','audio')}
 const valid={image:/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(png|jpg|webp)$/,video:/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.mp4$/,audio:/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.mp3$/}
 const mime={png:'image/png',jpg:'image/jpeg',webp:'image/webp',mp4:'video/mp4',mp3:'audio/mpeg'}
 export async function listMedia(){

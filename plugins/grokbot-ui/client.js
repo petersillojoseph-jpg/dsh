@@ -606,7 +606,10 @@ var __grokbotEntry = (() => {
   var REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
   var gazeTargets = /* @__PURE__ */ new Set();
   var gazeListenerBound = false;
+  var gazeFrame = null, gazePoint = null;
   function resetCursorGaze() {
+    if (gazeFrame !== null) cancelAnimationFrame(gazeFrame);
+    gazeFrame = null; gazePoint = null;
     for (const element of gazeTargets) {
       if (!element.isConnected) {
         gazeTargets.delete(element);
@@ -620,21 +623,30 @@ var __grokbotEntry = (() => {
     if (document.hidden) resetCursorGaze();
   }
   function updateCursorGaze(event) {
+  gazePoint = { x: event.clientX, y: event.clientY }
+  if (gazeFrame !== null) return
+  gazeFrame = requestAnimationFrame(() => {
+    gazeFrame = null
+    if (!gazePoint) return
+    const point = gazePoint
+    const updates = []
     for (const element of gazeTargets) {
-      if (!element.isConnected) {
-        gazeTargets.delete(element);
-        continue;
-      }
-      const rect = element.getBoundingClientRect();
-      if (!rect.width || !rect.height) continue;
-      const maxX = Math.min(6.45, rect.width * 0.104);
-      const maxY = Math.min(6.45, rect.height * 0.104);
-      const dx = Math.max(-maxX, Math.min(maxX, (event.clientX - rect.left - rect.width / 2) / rect.width * 2 * maxX));
-      const dy = Math.max(-maxY, Math.min(maxY, (event.clientY - rect.top - rect.height / 2) / rect.height * 2 * maxY));
-      element.style.setProperty("--avatar-gaze-x", `${dx}px`);
-      element.style.setProperty("--avatar-gaze-y", `${dy}px`);
+      if (!element.isConnected) { gazeTargets.delete(element); continue }
+      const rect = element.getBoundingClientRect()
+      if (!rect.width || !rect.height) continue
+      const maxX = Math.min(6.45, rect.width * 0.104)
+      const maxY = Math.min(6.45, rect.height * 0.104)
+      const dx = Math.max(-maxX, Math.min(maxX, (point.x - rect.left - rect.width / 2) / rect.width * 2 * maxX))
+      const dy = Math.max(-maxY, Math.min(maxY, (point.y - rect.top - rect.height / 2) / rect.height * 2 * maxY))
+      updates.push([element, dx, dy])
     }
-  }
+    for (const [element, dx, dy] of updates) {
+      element.style.setProperty('--avatar-gaze-x', `${dx}px`)
+      element.style.setProperty('--avatar-gaze-y', `${dy}px`)
+    }
+  })
+}
+
   function useCursorGaze(ref, enabled = true) {
     (0, import_react.useEffect)(() => {
       const element = ref.current;

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { generateImage, readSettings, saveSettings, DEFAULT_MODEL } from '../image-plugin/src/generate.js'
+import { generateImage, readSettings, saveSettings, DEFAULT_MODEL } from '../plugins/image-generation/src/generate.js'
 const credentials={resolve:async name=>{assert.equal(name,'OPENROUTER_API_KEY');return {value:'test-key'}}}
 const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64')
 test('generates with the selected model and persists the image',async()=>{const dir=await mkdtemp(join(tmpdir(),'dsh-image-test-'));try{

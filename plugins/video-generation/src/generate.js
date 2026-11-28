@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+import { existsSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { mkdir, readFile, writeFile, realpath } from 'node:fs/promises'
 import { join, resolve, sep } from 'node:path'
@@ -10,7 +12,7 @@ export async function saveSettings(dir,settings){if(!['480p','720p','1080p'].inc
 async function referenceImage(path){
   if(typeof path!=='string'||!path.startsWith('/'))throw Error('The reference image must be an attached image path.')
   const actual=await realpath(path).catch(()=>null);if(!actual)throw Error('The reference image could not be found.')
-  const roots=[join(homedir(),'.dsh','attachments'),join(homedir(),'.dsh','cache','attachments'),join(homedir(),'Applications','DeepSeek Harness Runtime','dsh-image-generation','data','images')]
+  const roots=[join(homedir(),'.dsh','attachments'),join(homedir(),'.dsh','cache','attachments'),(process.platform === 'darwin' && !existsSync(fileURLToPath(new URL('../../image-generation/package.json', import.meta.url))) ? join(homedir(),'Applications','DeepSeek Harness Runtime','dsh-image-generation','data','images') : fileURLToPath(new URL('../../image-generation/data/images/', import.meta.url)))]
   let allowed=false;for(const root of roots){const real=await realpath(root).catch(()=>null);if(real&&(actual===real||actual.startsWith(real+sep)))allowed=true}
   if(!allowed)throw Error('Attach the image to your message first, then ask to animate it.')
   const bytes=await readFile(actual);if(bytes.length>8_000_000)throw Error('The reference image is too large (maximum 8 MB).')

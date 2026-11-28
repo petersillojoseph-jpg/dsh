@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { mkdtemp, readFile, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
-import { generateVideo, readSettings, saveSettings } from '../video-plugin/src/generate.js'
+import { generateVideo, readSettings, saveSettings } from '../plugins/video-generation/src/generate.js'
 const credential={resolve:async name=>{assert.equal(name,'OPENROUTER_API_KEY');return {value:'test-key'}}}
 test('submits one job, polls and saves a completed video',async()=>{const dir=await mkdtemp(join(tmpdir(),'dsh-video-'));try{let calls=[];const bytes=Buffer.concat([Buffer.from([0,0,0,24]),Buffer.from('ftypisom'),Buffer.alloc(30)])
 const fetcher=async(url,opt)=>{calls.push(url);assert.equal(opt.headers.authorization,'Bearer test-key');if(calls.length===1){const data=JSON.parse(opt.body);assert.equal(data.model,'alibaba/wan-3.0');assert.equal(data.duration,5);assert.equal(data.resolution,'480p');return Response.json({id:'job-test',status:'pending'},{status:202})}if(calls.length===2)return Response.json({status:'completed',usage:{cost:0.25}});return new Response(bytes,{headers:{'content-type':'video/mp4'}})}

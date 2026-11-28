@@ -4,9 +4,25 @@
   "description": "Generate images in chat through OpenRouter.",
   "private": true,
   "type": "module",
-  "exports": { ".": "./index.js", "./client": "./client.js" },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js"
+  },
   "dsh": {
-    "bundle": { "patch": "./cordis.patch.yml" },
-    "client": { "platform": "web", "immediately": true, "inject": ["@deepseek-ai/dsh-client-ui-conversation", "@deepseek-ai/dsh-client-ui-tool", "@deepseek-ai/dsh-client-ui-settings"] }
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-tool",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh-tools": "0.2.2-rc.1"
   }
 }
