@@ -9,7 +9,7 @@ A custom interface and plugin collection for [DeepSeek Harness](https://github.c
 
 The `desktop/` Electron wrapper is the original Mac snapshot. It expects a separately prepared `~/Applications/DeepSeek Harness Runtime`; the runtime and a packaged app are not included. macOS-native dictation requires that original wrapper and is not available when using the web interface alone. Grok dictation uses OpenRouter.
 
-## Demo
+## UI
 
 ### GPT interface
 ![The DSH GPT interface](demo/UI.png)
