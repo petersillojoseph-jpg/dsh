@@ -11,9 +11,14 @@ The `desktop/` Electron wrapper is the original Mac snapshot. It expects a separ
 
 ## UI
 
-### GPT interface
-![The DSH GPT interface](demo/UI.png)
+### New Chat Interface
+![The DSH New Chat Interface](UI/UI.png)
 
+### Create GPT Interface
+![The DSH Create GPT Interface](UI/New-GPT.png)
+
+### Media Library Interface
+![The DSH Media Library Interface](UI/Media-Library.png)
 
 ## Requirements
 
@@ -76,3 +81,4 @@ The commands are the same on Omarchy and macOS. Use a terminal and keep the chec
 `plugins/` contains the interface and generation integrations; `desktop/` contains the original Mac wrapper; `branding/` contains the Mac icon; `demo/` is reserved for future demo material. Credentials, profiles, GPT data and generated media are excluded from Git.
 
 Run the local mocked tests with `node --test tests/*.test.mjs`. They do not make real generation requests or verify a Mac installation. The bundled client files are distributed alongside their editable sources; the original Grokbot build script was not included in the Mac snapshot. See `plugins/grokbot-ui/LICENSES/` and `THIRD_PARTY_NOTICES.md` for third-party notices. No additional licence is granted for the remaining code.
+ 
